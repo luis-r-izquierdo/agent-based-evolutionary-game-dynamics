@@ -9,7 +9,9 @@ players-own [
   strategy
   strategy-after-revision
   payoff
+
   other-players
+  played?
 ]
 
 to setup
@@ -47,12 +49,13 @@ to setup-players
       set payoff 0
       set strategy i
       set strategy-after-revision strategy
+      set played? false
     ]
     set i (i + 1)
   ]
 
   set n-of-players count players
-  ask players [ set other-players other players ]
+  ask players [set other-players other players]
 end
 
 to setup-graph
@@ -66,6 +69,7 @@ end
 
 to go
   update-n-of-players
+  ask players [set played? false]
   ask players [
     if (random-float 1 < prob-revision) [
       update-strategy-after-revision
@@ -79,6 +83,7 @@ end
 to update-payoff
   let mate one-of other-players
   set payoff item ([strategy] of mate) (item strategy payoff-matrix)
+  set played? true
 end
 
 to update-strategy-after-revision
@@ -87,8 +92,8 @@ to update-strategy-after-revision
     [
       let observed-player one-of other-players
 
-      update-payoff
-      ask observed-player [update-payoff]
+      if not played? [update-payoff]
+      ask observed-player [if not played? [update-payoff]]
 
       if ([payoff] of observed-player) > payoff [
         set strategy-after-revision ([strategy] of observed-player)
@@ -294,7 +299,7 @@ n-of-players
 n-of-players
 2
 1000
-100.0
+500.0
 1
 1
 NIL
@@ -607,7 +612,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.2.2
+NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
