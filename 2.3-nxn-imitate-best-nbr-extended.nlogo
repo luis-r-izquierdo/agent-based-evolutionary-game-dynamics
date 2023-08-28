@@ -134,8 +134,8 @@ to update-strategy-after-revision
                   [ imitative-pairwise-difference-protocol ]
         protocol = "imitative-positive-proportional-m"
                   [ imitative-positive-proportional-m-protocol ]
-        protocol = "imitative-logit-m"
-                  [ imitative-logit-m-protocol ]
+        protocol = "fermi-m"
+                  [ fermi-m-protocol ]
       )
     ]
 end
@@ -173,7 +173,7 @@ to imitative-positive-proportional-m-protocol
 end
 
 
-to imitative-logit-m-protocol
+to fermi-m-protocol
   let observed-player one-of other my-coplayers
 
   ;; compute difference in average payoffs
@@ -490,7 +490,7 @@ CHOOSER
 216
 protocol
 protocol
-"best-neighbor" "imitative-pairwise-difference" "imitative-positive-proportional-m" "imitative-logit-m"
+"best-neighbor" "imitative-pairwise-difference" "imitative-positive-proportional-m" "fermi-m"
 0
 
 SLIDER
