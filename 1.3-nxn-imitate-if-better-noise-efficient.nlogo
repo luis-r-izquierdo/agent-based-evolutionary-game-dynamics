@@ -9,7 +9,7 @@ players-own [
   strategy
   strategy-after-revision
   payoff
-  last-tick-I-played
+  tick-I-played-last
   other-players
 ]
 
@@ -48,7 +48,7 @@ to setup-players
       set payoff 0
       set strategy i
       set strategy-after-revision strategy
-      set last-tick-I-played -1
+      set tick-I-played-last -1
     ]
     set i (i + 1)
   ]
@@ -80,7 +80,7 @@ end
 to update-payoff
   let mate one-of other-players
   set payoff item ([strategy] of mate) (item strategy payoff-matrix)
-  set last-tick-I-played ticks
+  set tick-I-played-last ticks
 end
 
 to update-strategy-after-revision
@@ -89,9 +89,9 @@ to update-strategy-after-revision
     [
       let observed-player one-of other-players
 
-      if (last-tick-I-played < ticks) [update-payoff]
+      if (tick-I-played-last < ticks) [update-payoff]
       ask observed-player [
-        if (last-tick-I-played < ticks) [update-payoff]
+        if (tick-I-played-last < ticks) [update-payoff]
       ]
 
       if ([payoff] of observed-player) > payoff [

@@ -12,7 +12,7 @@ players-own [
   strategy-after-revision
   payoff
   ;; played?            <== deleted line
-  last-tick-I-played ;; <== new line
+  tick-I-played-last ;; <== new line
 ]
 
 to show-profiler-report
@@ -60,7 +60,7 @@ to setup-players
       set strategy i
       set strategy-after-revision strategy
       ;; set played? false         <== deleted line
-      set last-tick-I-played -1 ;; <== new line
+      set tick-I-played-last -1 ;; <== new line
     ]
     set i (i + 1)
   ]
@@ -94,7 +94,7 @@ to update-payoff
   let mate one-of other players
   set payoff item ([strategy] of mate) (item strategy payoff-matrix)
   ;; set played? true <== deleted line
-  set last-tick-I-played ticks ;; <== new line
+  set tick-I-played-last ticks ;; <== new line
 end
 
 to update-strategy-after-revision
@@ -103,9 +103,9 @@ to update-strategy-after-revision
     [
       let observed-player one-of other players
 
-      if (last-tick-I-played < ticks) [update-payoff]   ;; <== modified line
+      if (tick-I-played-last < ticks) [update-payoff]   ;; <== modified line
       ask observed-player [                             ;; <== modified line
-        if (last-tick-I-played < ticks) [update-payoff] ;; <== modified line
+        if (tick-I-played-last < ticks) [update-payoff] ;; <== modified line
       ]                                                 ;; <== modified line
 
       if ([payoff] of observed-player) > payoff [
