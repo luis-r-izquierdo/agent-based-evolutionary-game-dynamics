@@ -26,6 +26,7 @@ end
 
 to setup
   clear-all
+  no-display
   setup-payoffs
   setup-players
   setup-graph
