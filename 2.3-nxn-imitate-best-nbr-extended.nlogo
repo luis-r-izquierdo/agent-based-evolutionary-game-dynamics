@@ -241,7 +241,7 @@ end
 to check-payoffs-are-non-negative
   if min reduce sentence payoff-matrix < 0 [
     user-message (word
-      "Since you are using rule = imitative-positive-proportional-m, all elements in the payoff matrix\n"
+      "Since you are using decision-rule = imitative-positive-proportional-m, all elements in the payoff matrix\n"
       payoffs
       "\nshould be non-negative numbers.")
   ]
