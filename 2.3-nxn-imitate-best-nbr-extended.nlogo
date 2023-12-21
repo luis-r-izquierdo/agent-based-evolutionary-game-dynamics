@@ -35,7 +35,7 @@ to setup-payoffs
   ;; New lines below
   set max-payoff-difference
      (max-of-matrix payoff-matrix) - (min-of-matrix payoff-matrix)
-  if protocol = "imitative-positive-proportional-m"
+  if decision-rule = "imitative-positive-proportional-m"
      [ check-payoffs-are-non-negative ]
 end
 
@@ -128,26 +128,26 @@ to update-strategy-after-revision
   ifelse (random-float 1 < noise)
     [ set strategy-after-revision random n-of-strategies ]
     [ (ifelse
-        protocol = "best-neighbor"
-                  [ best-neighbor-protocol ]
-        protocol = "imitative-pairwise-difference"
-                  [ imitative-pairwise-difference-protocol ]
-        protocol = "imitative-positive-proportional-m"
-                  [ imitative-positive-proportional-m-protocol ]
-        protocol = "Fermi-m"
-                  [ Fermi-m-protocol ]
+        decision-rule = "best-neighbor"
+                  [ best-neighbor-rule ]
+        decision-rule = "imitative-pairwise-difference"
+                  [ imitative-pairwise-difference-rule ]
+        decision-rule = "imitative-positive-proportional-m"
+                  [ imitative-positive-proportional-m-rule ]
+        decision-rule = "Fermi-m"
+                  [ Fermi-m-rule ]
       )
     ]
 end
 
 
-to best-neighbor-protocol
+to best-neighbor-rule
   set strategy-after-revision
       [strategy] of one-of my-nbrs-and-me with-max [payoff]
 end
 
 
-to imitative-pairwise-difference-protocol
+to imitative-pairwise-difference-rule
   let observed-player one-of other my-coplayers
 
   ;; compute difference in average payoffs
@@ -165,7 +165,7 @@ to imitative-pairwise-difference-protocol
 end
 
 
-to imitative-positive-proportional-m-protocol
+to imitative-positive-proportional-m-rule
   let chosen-nbr
       rnd:weighted-one-of my-nbrs-and-me [ payoff ^ m ]
       ;; https://ccl.northwestern.edu/netlogo/docs/rnd.html#rnd:weighted-one-of
@@ -173,7 +173,7 @@ to imitative-positive-proportional-m-protocol
 end
 
 
-to Fermi-m-protocol
+to Fermi-m-rule
   let observed-player one-of other my-coplayers
 
   ;; compute difference in average payoffs
@@ -241,7 +241,7 @@ end
 to check-payoffs-are-non-negative
   if min reduce sentence payoff-matrix < 0 [
     user-message (word
-      "Since you are using protocol = imitative-positive-proportional-m, all elements in the payoff matrix\n"
+      "Since you are using rule = imitative-positive-proportional-m, all elements in the payoff matrix\n"
       payoffs
       "\nshould be non-negative numbers.")
   ]
@@ -488,10 +488,10 @@ CHOOSER
 171
 261
 216
-protocol
-protocol
+decision-rule
+decision-rule
 "best-neighbor" "imitative-pairwise-difference" "imitative-positive-proportional-m" "Fermi-m"
-0
+3
 
 SLIDER
 268
@@ -850,7 +850,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.1
+NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
