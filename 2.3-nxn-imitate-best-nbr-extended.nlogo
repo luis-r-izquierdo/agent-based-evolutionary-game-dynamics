@@ -130,6 +130,8 @@ to update-strategy-after-revision
     [ (ifelse
         decision-rule = "best-neighbor"
                   [ best-neighbor-rule ]
+        decision-rule = "imitate-if-better-all-nbrs"
+                  [ imitate-if-better-all-nbrs-rule ]
         decision-rule = "imitative-pairwise-difference"
                   [ imitative-pairwise-difference-rule ]
         decision-rule = "imitative-positive-proportional-m"
@@ -144,6 +146,15 @@ end
 to best-neighbor-rule
   set strategy-after-revision
       [strategy] of one-of my-nbrs-and-me with-max [payoff]
+end
+
+
+to imitate-if-better-all-nbrs-rule
+  let observed-player one-of other my-coplayers
+
+  if ([payoff / n-of-my-coplayers] of observed-player) > (payoff / n-of-my-coplayers) [
+    set strategy-after-revision ([strategy] of observed-player)
+  ]
 end
 
 
@@ -490,8 +501,8 @@ CHOOSER
 216
 decision-rule
 decision-rule
-"best-neighbor" "imitative-pairwise-difference" "imitative-positive-proportional-m" "Fermi-m"
-3
+"best-neighbor" "imitate-if-better-all-nbrs" "imitative-pairwise-difference" "imitative-positive-proportional-m" "Fermi-m"
+0
 
 SLIDER
 268
