@@ -57,6 +57,7 @@ to setup-players
     ask n-of j (patches with [strategy = false]) [
       set payoff 0
       set strategy i
+      set strategy-after-revision strategy
       set my-nbrs-and-me (patch-set neighbors self)
       set my-coplayers ifelse-value self-matching?
          [my-nbrs-and-me] [neighbors]
@@ -646,7 +647,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.0
+NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
