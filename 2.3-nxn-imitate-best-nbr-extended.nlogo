@@ -71,6 +71,7 @@ to setup-players
     ask n-of j (patches with [strategy = false]) [
       set payoff 0
       set strategy i
+      set strategy-after-revision strategy
       set my-coplayers patches at-points offsets
       set n-of-my-coplayers (count my-coplayers)
       set my-nbrs-and-me (patch-set my-coplayers self)
