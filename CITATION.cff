@@ -10,20 +10,17 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Luis
-    name-particle: R
+  - given-names: Luis R.
     family-names: Izquierdo
     email: lrizquierdo@ubu.es
     affiliation: University of Burgos
     orcid: 'https://orcid.org/0000-0003-1057-4465'
-  - given-names: Segismundo
-    name-particle: S
+  - given-names: Segismundo S.
     family-names: Izquierdo
     email: segismundo.izquierdo@uva.es
     affiliation: University of Valladolid
     orcid: 'https://orcid.org/0000-0002-7113-0633'
-  - given-names: William
-    name-particle: H
+  - given-names: William H.
     family-names: Sandholm
 repository-code: >-
   https://github.com/luis-r-izquierdo/agent-based-evolutionary-game-dynamics
