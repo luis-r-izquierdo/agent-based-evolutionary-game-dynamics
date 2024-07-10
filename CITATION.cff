@@ -1,0 +1,57 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Models for the book "Agent-Based Evolutionary Game
+  Dynamics"
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Luis
+    name-particle: R
+    family-names: Izquierdo
+    email: lrizquierdo@ubu.es
+    affiliation: University of Burgos
+    orcid: 'https://orcid.org/0000-0003-1057-4465'
+  - given-names: Segismundo
+    name-particle: S
+    family-names: Izquierdo
+    email: segismundo.izquierdo@uva.es
+    affiliation: University of Valladolid
+    orcid: 'https://orcid.org/0000-0002-7113-0633'
+  - given-names: William
+    name-particle: H
+    family-names: Sandholm
+repository-code: >-
+  https://github.com/luis-r-izquierdo/agent-based-evolutionary-game-dynamics
+url: >-
+  https://wisc.pb.unizin.org/agent-based-evolutionary-game-dynamics/
+abstract: >-
+  NetLogo models for the book "Agent-Based Evolutionary Game
+  Dynamics".
+
+
+  This book is a guide to implement and analyze simple
+  agent-based evolutionary models using NetLogo.
+
+
+  All the models we implement are agent-based, i.e.
+  individual agents and their interactions are explicitly
+  represented in the models. To formalise agents’
+  interactions we use the basic framework of Evolutionary
+  Game Theory.
+
+
+  NetLogo is a multi-agent programmable modeling environment
+  used by hundreds of thousands of students, teachers and
+  researchers all around the globe. No coding experience is
+  necessary to fully understand the contents of this book.
+keywords:
+  - agent-based model
+  - evolutionary game theory
+  - agent-based simulation
+  - netlogo
+license: GPL-3.0-or-later
