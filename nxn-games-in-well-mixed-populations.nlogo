@@ -235,7 +235,7 @@ end
 
 to direct-positive-proportional-m-rule
   let pairs-strategy-payoff (map [
-    [s] -> list s (payoff-for-strategy s)
+    [s] -> list s ((payoff-for-strategy s) ^ m)
   ] strategy-numbers)
 
   set strategy-after-revision first
