@@ -28,6 +28,7 @@ players-own [
 
 to setup
   clear-all
+  no-display
   setup-payoffs
   setup-players
   setup-graph
@@ -448,7 +449,7 @@ CHOOSER
 decision-rule
 decision-rule
 "imitate-if-better" "imitative-pairwise-difference" "imitative-linear-attraction" "imitative-linear-dissatisfaction" "direct-best" "direct-pairwise-difference" "direct-positive-proportional-m"
-6
+0
 
 SLIDER
 532
