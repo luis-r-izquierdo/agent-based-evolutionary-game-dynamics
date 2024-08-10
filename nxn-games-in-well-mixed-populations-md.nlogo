@@ -262,7 +262,11 @@ end
 ;;;;;;;;;;;;;;;;;;;;;
 
 to update-x
-  set x x + prob-revision * runresult (word decision-rule "-" payoff-to-use "-md")
+  set x x + prob-revision * (
+    (1 - noise) * runresult (word decision-rule "-" payoff-to-use "-md")
+    +
+    noise * (0.5 - x)
+    )
 end
 
 
