@@ -408,7 +408,7 @@ prob-revision
 prob-revision
 0
 1
-0.01
+0.05
 0.01
 1
 NIL
@@ -488,7 +488,7 @@ INPUTBOX
 229
 158
 n-of-players-for-each-strategy
-[750 250]
+[700 300]
 1
 0
 String (reporter)
