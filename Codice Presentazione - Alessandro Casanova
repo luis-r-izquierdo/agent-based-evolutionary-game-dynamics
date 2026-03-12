@@ -1,0 +1,155 @@
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+from mesa import Agent, Model
+from mesa.space import NetworkGrid
+from mesa.datacollection import DataCollector
+
+# Define the Player class, which represents an agent in the model
+class Player(Agent):
+    def __init__(self, model, strategy):
+        super().__init__(model)
+        self.strategy = strategy
+        self.payoff = 0
+        self.wealth = 1
+# Method to update the agent's payoff based on interactions with neighbors
+    def update_payoff(self):
+        neighbors_nodes = self.model.net.get_neighborhood(self.pos, include_center=False)
+        others = self.model.net.get_cell_list_contents(neighbors_nodes)
+        if others:
+            other = self.random.choice(others)
+            s1 = 0 if self.strategy == 'A' else 1
+            s2 = 0 if other.strategy == 'A' else 1
+            self.wealth += self.model.payoffs[s1][s2]
+            other.wealth += self.model.payoffs[s2][s1]
+
+ # Method to update the agent's strategy based on wealth comparison with neighbors
+    def update_strategy(self):
+        if self.random.random() < self.model.prob_revision:
+            neighbors_nodes = self.model.net.get_neighborhood(self.pos, include_center=False)
+            others = self.model.net.get_cell_list_contents(neighbors_nodes)
+            if others:
+                other = self.random.choice(others)
+                if other.wealth > self.wealth:
+                    self.strategy = other.strategy
+                    
+# Define the GameModel class, which represents the overall simulation model
+class GameModel(Model):
+    def __init__(self, num_agents=100,
+                 payoff_matrix=[[1, 0], [0, 2]],
+                 initial_distribution=[0.7, 0.3],
+                 network_type='watts',
+                 prob_link=0.1,
+                 prob_rewiring=0.7,
+                 avg_degree=10,
+                 prob_revision=0.1,
+                 noise=0.03,
+                 seed=None):
+        super().__init__(seed=seed)
+        self.num_agents = num_agents
+        self.running = True
+        self.prob_revision = prob_revision
+        self.payoffs = payoff_matrix
+        
+
+        # Network creation
+        if network_type == "erdos":
+            self.G = nx.erdos_renyi_graph(n=num_agents, p=prob_link, seed=seed)
+            self.apply_noise(noise)
+        elif network_type == "watts":
+            self.G = nx.watts_strogatz_graph(n=num_agents, k=avg_degree, p=prob_rewiring, seed=seed)
+        elif network_type == "PA":
+            self.G = nx.powerlaw_cluster_graph(n=num_agents, m=5, p=0.45, seed=seed)          
+            self.apply_noise(noise)
+            
+            
+        else:
+            raise ValueError("Invalid network_type. Use 'erdos', 'watts', or 'PA'.")
+
+        self.net = NetworkGrid(self.G)
+
+        # Strategy assignment
+        num_A = int(initial_distribution[0] * num_agents) # Calculate number of agents with strategy A
+        strategy_list = ['A'] * num_A + ['B'] * (num_agents - num_A)
+        self.random.shuffle(strategy_list)
+
+        nodes = list(self.G.nodes()) # Get list of nodes in the graph
+        self.random.shuffle(nodes) # Shuffle the nodes
+
+        # Place agents in the network
+        for i, node in enumerate(nodes):
+            a = Player(self, strategy_list[i])
+            self.net.place_agent(a, node)
+
+        # Initialize data collector to gather agent data
+        self.datacollector = DataCollector(
+            agent_reporters={"Wealth": "wealth", "Current_strategy": "strategy"},
+        )
+
+    def apply_noise(self, noise_prob=0.03):
+        for u, v in list(self.G.edges()):
+            if self.random.random() < noise_prob:
+                self.G.remove_edge(u, v)
+                while True:
+                    new_u = self.random.randrange(self.num_agents)
+                    new_v = self.random.randrange(self.num_agents)
+                    if new_u != new_v and not self.G.has_edge(new_u, new_v):
+                        self.G.add_edge(new_u, new_v)
+                        break
+    
+
+# Method to perform one step of the simulation
+    def step(self):
+        self.datacollector.collect(self) # Collect data at the current step
+        self.agents.shuffle_do("update_payoff")
+        self.agents.shuffle_do("update_strategy")
+
+
+def run_simulation(num_runs=100, num_steps=5000, network_type="watts"):
+    results = [] # List to store results of each run
+
+    for run in range(num_runs):
+        model = GameModel(
+            num_agents=100,
+            payoff_matrix=[[1, 0], [0, 2]],
+            initial_distribution=[0.7, 0.3],
+            network_type=network_type,
+            prob_link=0.1,
+            prob_rewiring=0.1,
+            avg_degree=10,
+            prob_revision=0.1,
+            noise=0.03,
+            seed=run
+        )
+
+        for _ in range(num_steps):
+            model.step()
+
+        data = model.datacollector.get_agent_vars_dataframe()
+        last_step = data.index.get_level_values(0).max()
+        final_data = data.xs(last_step, level="Step")
+        count_A = (final_data["Current_strategy"] == "A").sum()
+        count_B = (final_data["Current_strategy"] == "B").sum()
+
+        results.append({
+            "run": run,
+            "A": count_A,
+            "B": count_B,
+            "clustering": nx.average_clustering(model.G)
+        })
+
+    df_results = pd.DataFrame(results) # Convert results to a DataFrame
+    df_results.to_csv("final_strategy_counts.csv", index=False) # Save results to CSV
+
+    plt.figure(figsize=(8, 5))
+    sns.histplot(df_results["A"], bins=20, color='skyblue')
+    plt.title(f"Distribution of Strategy A After {num_steps} Steps ({network_type.title()} Network)")
+    plt.xlabel("Number of Agents Using Strategy A")
+    plt.ylabel("Frequency")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+# Uncomment to run the simulation directly
+run_simulation()

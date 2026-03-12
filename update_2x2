@@ -1,0 +1,99 @@
+import mesa
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import random
+
+# Matrice dei payoff per Stag Hunt
+payoffs = {
+    0: {0: 3, 1: 0},  # Stag
+    1: {0: 2, 1: 1}   # Hare
+}
+
+# Agente
+class StagHuntAgent:
+    def __init__(self, unique_id, model, strategy):
+        self.unique_id = unique_id
+        self.model = model
+        self.random = model.random
+        self.strategy = strategy
+        self.payoff = 0
+        self.played = False #nuova variabile 
+
+    def update_strategy(self):
+        if self.random.random() < self.model.prob_revision:
+            # osserva solo altri che hanno giocato
+            others = [a for a in self.model.my_agents if a.played and a != self]
+            if others:
+                other = self.random.choice(others)
+                if other.payoff > self.payoff:
+                    self.strategy = other.strategy
+
+# Modello
+class StagHuntModel(mesa.Model):
+    def __init__(self, n, initial_stag_ratio=0.7, seed=None):
+        super().__init__(seed=seed)
+        self.num_agents = n
+        self.running = True
+        self.prob_revision = 0.1
+        self.my_agents = []
+
+        num_stag = int(n * initial_stag_ratio)
+        num_hare = n - num_stag
+        strategies = [0] * num_stag + [1] * num_hare
+        self.random.shuffle(strategies)
+
+        for i, strategy in enumerate(strategies):
+            agent = StagHuntAgent(i, self, strategy)
+            self.my_agents.append(agent)
+
+    def step(self):
+        for agent in self.my_agents:
+            agent.payoff = 0
+            agent.played = False
+
+        # Matching a coppie
+        shuffled_agents = self.random.sample(self.my_agents, len(self.my_agents))
+        for i in range(0, len(shuffled_agents) - 1, 2):
+            a1 = shuffled_agents[i]
+            a2 = shuffled_agents[i + 1]
+            a1.payoff = payoffs[a1.strategy][a2.strategy]
+            a2.payoff = payoffs[a2.strategy][a1.strategy]
+            a1.played = True
+            a2.played = True
+
+        for agent in self.my_agents:
+            agent.update_strategy()
+
+# Simulazione
+def run_simulation(initial_stag_ratio):
+    model = StagHuntModel(n=100, initial_stag_ratio=initial_stag_ratio, seed=42)
+    steps = 100
+    strategy_data = []
+
+    for step in range(steps):
+        model.step()
+        agent_strategy = [agent.strategy for agent in model.my_agents]
+        strategy_data.append(agent_strategy)
+
+    strategy_counts = pd.DataFrame([
+        {"Step": i, "Stag (0)": row.count(0), "Hare (1)": row.count(1)}
+        for i, row in enumerate(strategy_data)
+    ])
+
+    return strategy_counts
+
+# Esecuzione
+results = run_simulation(initial_stag_ratio=0.7)
+
+# Grafico
+plt.figure(figsize=(10, 6))
+sns.lineplot(data=results, x="Step", y="Stag (0)", label="Stag (0)", color="green")
+sns.lineplot(data=results, x="Step", y="Hare (1)", label="Hare (1)", color="brown")
+plt.title("Evoluzione Strategie nel Gioco della Caccia al Cervo (Matching a coppie)")
+plt.xlabel("Passo (Step)")
+plt.ylabel("Numero di Agenti")
+plt.legend(title="Strategia")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
